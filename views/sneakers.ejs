@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sneakers</title>
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+    <%- include('header_files')%>
+        <style>
+            nav {
+                background-color: black !important;
+            }
+
+            ::-webkit-scrollbar {
+                width: 15px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background-color: #ffffff4e;
+                border-radius: 20px;
+                border: 6px solid transparent;
+                background-clip: content-box;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #a8bbbf;
+            }
+
+            .name-tag {
+                color: black;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
+            }
+
+            .card {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .card-body {
+                position: relative;
+
+                /* height: 2.5em; */
+            }
+
+            .card:hover {
+                filter: opacity(0.9);
+                transform: rotate3d(1, 1, 1, 0.1deg);
+            }
+
+            .name-tag:hover {
+                color: rgb(128, 128, 128);
+
+            }
+
+            .drop li {
+                background-color: rgb(80, 0, 165);
+
+
+            }
+
+            .drop:focus {
+                background-color: rgb(80, 0, 165);
+            }
+
+            .drop li:selected {
+                background-color: rgb(135, 0, 165);
+            }
+
+            .searchbox {
+                width: 150%;
+                height: 100% !important;
+                border-radius: 10px;
+                background-color: rgb(0, 0, 0);
+                border: 2px solid white;
+                color: white;
+                font-family: Gilroy-Medium;
+                letter-spacing: 2px!important;
+                padding-left: 5px;
+            }
+.searchbox::placeholder{
+    color: white;
+    font-family: Gilroy-Medium;
+
+}
+            #sbtn {
+                margin-top: 5px !important;
+                width: 20%;
+                padding-right: 5px;
+                height: 104% !important;
+                border-radius: 0 10px 10px 0;
+                text-align: center;
+                border: none;
+                border-top: 2px solid white;
+                border-right: 2px solid white;
+                border-bottom: 2px solid white;
+                background-color: rgb(80, 0, 165);
+            }
+
+            .dropdown {
+                display: flex;
+                justify-content: space-between
+            }
+        </style>
+        <link href="stylesheets/MenStyles.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+
+<body onload="getMenSneakers()">
+    <%- include('Guest_navbar')%>
+        <br><br><br><br><br><br><br><br><br><br>
+        <div class="container">
+            <div data-aos="fade-down" data-aos-duration="1000">
+                <h2 class="text-center fs-1 ">Latest release</h2>
+            </div>
+
+
+            <div class="dropdown text-end  ">
+                <div> <input id="search" type="search " placeholder="Search" class="searchbox " autocorrect="off" autocapitalize="off" autocomplete="off"></div>
+                <button class="btn   dropdown-toggle drop text-center fs-4  " type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Filter
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark drop">
+                    <li><a onclick='getMenSneakers()' class="dropdown-item text-light fs-4  " href="#">Default</a></li>
+                    <li><a onclick='getMenNike()' class="dropdown-item text-light fs-4  " href="#">Nike</a></li>
+                    <li><a onclick='getMenAdidas()' class="dropdown-item text-light fs-4  " href="#">Adidas</a></li>
+                    <li><a onclick='getMenPuma()' class="dropdown-item text-light fs-4  " href="#">Puma</a></li>
+
+                </ul>
+            </div>
+
+            <hr style="height:2px;background-color: white!important     ;">
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+
+            <div class="container py-5">
+                <p id="demo" class="text-center fs-1 text-light"></p>
+                <div class="row py-5" id="ProductsDiv">
+
+                </div>
+            </div>
+        </div>
+</body>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+<%- include('footer_script')%>
+
+    <script>
+        var AddtoCart = (object) => {
+            console.log(object);
+            var formData = new FormData();
+            var a = myfun();
+            formData.append("action", "add");
+            if (a != false) {
+                console.log("hello", a)
+                formData.append("size", a)
+            }
+            else {
+                return
+            }
+
+            formData.append("productObject", JSON.stringify(object));
+
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+
+                    if (this.response == "success") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Product has been added"
+                        });
+                    }
+                    else {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Product Already in your Cart"
+                        })
+                    }
+                }
+            }
+            http.open("POST", "/add-to-cart", true);
+            http.send(formData);
+        };
+        var sbox = document.getElementById('search');
+        sbox.addEventListener("input", e => {
+            search(e.target.value)
+            // console.log(e.target.innerHTML);
+            var item = e.target.value;
+        })
+
+        function search(i) {
+            document.getElementById("demo").innerHTML = ""
+            var item = i
+if (item==""){
+    item="all"
+    
+}
+            var formData = new FormData();
+            // console.log(item)
+            // formData.append("action",action);
+            formData.append("item", item);
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(this.response);
+                    var cardsHtml = ``;
+                    if (this.response == "notFound") {
+                        
+                        // console.log(item);
+                        document.getElementById("demo").innerHTML = "Not Found"
+                        
+                    }
+                    
+                    else {
+                        var Products = JSON.parse(this.response);
+                        // console.log(Products);
+                        Products.forEach(value => {
+
+                            cardsHtml += `<div class="col-lg-4 text-center">`;
+                            cardsHtml += `<div class="card mb-5" >`;
+                            cardsHtml += `<a style='pointer-events:auto' href="/show-sneaker/${value.id}"><img  src='${value.photo}' alt=''></a>`;
+                            cardsHtml += `<div class="card-body" >`;
+                            cardsHtml += `<h5  class="pname fs-3" ><a class="name-tag" href='/show-sneaker/${value.id}'>${value.product_name}</a></h5>`;
+                            var disprice = value.price - (value.price * value.discount) / 100;
+                            cardsHtml += `<del class='text-danger real-price fs-2'>&#x20b9;${value.price}</del>`;
+
+                            cardsHtml += `<span class='dis-price mx-3 fs-2 '>&#x20b9;${Math.round(disprice)}</span>`;
+
+
+                            cardsHtml += `</div>`;
+                            cardsHtml += `</div>`;
+                            cardsHtml += `</div>`;
+                        })
+                    }
+                    document.getElementById('ProductsDiv').innerHTML = cardsHtml;
+                    // }
+                }
+            }
+            http.open("POST", '/sneakers', true);
+            http.send(formData);
+        }
+
+
+
+        var getMenSneakers = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(JSON.parse(this.response));
+                    var Products = JSON.parse(this.response);
+                    var cardsHtml = ``;
+                    Products.forEach(value => {
+
+                        cardsHtml += `<div class="col-lg-4 text-center">`;
+                        cardsHtml += `<div class="card mb-5" >`;
+                        cardsHtml += `<a style='pointer-events:auto' href="/show-sneaker/${value.id}"><img  src='${value.photo}' alt=''></a>`;
+                        cardsHtml += `<div class="card-body" >`;
+                        cardsHtml += `<h5  class="pname fs-3" ><a class="name-tag" href='/show-sneaker/${value.id}'>${value.product_name}</a></h5>`;
+                        var disprice = value.price - (value.price * value.discount) / 100;
+                        cardsHtml += `<del class='text-danger real-price fs-2'>&#x20b9;${value.price}</del>`;
+
+                        cardsHtml += `<span class='dis-price mx-3 fs-2 '>&#x20b9;${Math.round(disprice)}</span>`;
+
+
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                    });
+
+                    document.getElementById('ProductsDiv').innerHTML = cardsHtml;
+
+                }
+            }
+            http.open('GET', '/get-MenSneakers', true);
+            http.send();
+        }
+        // var ShowSneaker = (id) => {
+        //   console.log(JSON.parse(id))
+        // var pid=id;
+        // console.log(id) 
+        //     var http = new XMLHttpRequest();
+        //     http.onreadystatechange = function () {
+
+
+        //     }
+        //      http.open('Get', `/show-sneaker?id=${id}`, true);
+        //     http.send();    
+        // }
+
+
+
+        function myfun() {
+
+            var x = document.getElementById("size");
+            var strUser = x.options[x.selectedIndex].value;
+            // console.log(strUser);
+            if (strUser == undefined || strUser == "Size") {
+
+                alert("Select Your Size")
+                return false;
+            }
+            return strUser
+        }
+
+        var getMenNike = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(JSON.parse(this.response));
+                    var Products = JSON.parse(this.response);
+                    var cardsHtml = ``;
+                    Products.forEach(value => {
+                        cardsHtml += `<div class="col-lg-4 text-center">`;
+                        cardsHtml += `<div class="card mb-5" >`;
+                        cardsHtml += `<a style='pointer-events:auto' href="/show-sneaker/${value.id}"><img class="shoe" src='${value.photo}' alt=''></a>`;
+                        cardsHtml += `<div class="card-body" >`;
+                        cardsHtml += `<h5  class="pname fs-3" ><a class="name-tag" href='/show-sneaker/${value.id}'>${value.product_name}</a></h5>`;
+                        var disprice = value.price - (value.price * value.discount) / 100;
+                        cardsHtml += `<del class='text-danger real-price'>&#x20b9;${value.price}</del>`;
+                        cardsHtml += `<span class='dis-price mx-3'>&#x20b9;${Math.round(disprice)}</span>`;
+
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                    });
+                    document.getElementById('ProductsDiv').innerHTML = cardsHtml;
+
+                }
+            }
+            http.open('GET', '/get-MenNike', true);
+            http.send();
+        }
+        var getMenAdidas = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(JSON.parse(this.response));
+                    var Products = JSON.parse(this.response);
+                    var cardsHtml = ``;
+                    Products.forEach(value => {
+                        cardsHtml += `<div class="col-lg-4 text-center">`;
+                        cardsHtml += `<div class="card mb-5" >`;
+                        cardsHtml += `<a style='pointer-events:auto' href="/show-sneaker/${value.id}"><img class="shoe" src='${value.photo}' alt=''></a>`;
+                        cardsHtml += `<div class="card-body" >`;
+                        cardsHtml += `<h5  class="pname fs-3" ><a class="name-tag" href='/show-sneaker/${value.id}'>${value.product_name}</a></h5>`;
+                        var disprice = value.price - (value.price * value.discount) / 100;
+                        cardsHtml += `<del class='text-danger real-price'>&#x20b9;${value.price}</del>`;
+                        cardsHtml += `<span class='dis-price mx-3'>&#x20b9;${Math.round(disprice)}</span>`;
+
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                    });
+
+                    document.getElementById('ProductsDiv').innerHTML = cardsHtml;
+
+                }
+            }
+            http.open('GET', '/get-MenAdidas', true);
+            http.send();
+        }
+        var getMenPuma = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(JSON.parse(this.response));
+                    var Products = JSON.parse(this.response);
+                    var cardsHtml = ``;
+                    Products.forEach(value => {
+                        cardsHtml += `<div class="col-lg-4 text-center">`;
+                        cardsHtml += `<div class="card mb-5" >`;
+
+                        cardsHtml += `<a style='pointer-events:auto' href="/show-sneaker/${value.id}"><img class="shoe" src='${value.photo}' alt=''></a>`;
+                        cardsHtml += `<div class="card-body" >`;
+                        cardsHtml += `<h5  class="pname fs-3" ><a class="name-tag" href='/show-sneaker/${value.id}'>${value.product_name}</a></h5>`;
+                        var disprice = value.price - (value.price * value.discount) / 100;
+                        cardsHtml += `<del class='text-danger real-price'>&#x20b9;${value.price}</del>`;
+                        cardsHtml += `<span class='dis-price mx-3'>&#x20b9;${Math.round(disprice)}</span>`;
+
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                        cardsHtml += `</div>`;
+                    });
+
+                    document.getElementById('ProductsDiv').innerHTML = cardsHtml;
+
+                }
+            }
+            http.open('GET', '/get-MenPuma', true);
+            http.send();
+        }
+
+
+    </script>
+
+
+</html>

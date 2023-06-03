@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Change Password</title>
+    <%- include('../header_files')%>
+</head>
+<body>
+    <%- include('Guest_navbar2')%>
+
+    <div class="container py-5">
+        <div class="col-lg-6 offset-lg-3">
+            <h2 class="text-light text-center mb-4">Change Password</h2>
+            <form id="ChangeUSERPassword">
+                <div class="mb-3">
+                    <label class="text-light" for="current">Current Password</label>
+                    <input data-rule-required="true" type="password" id="current" name="current"
+                        class="form-control bg-dark text-light">
+                </div>
+                <div class="mb-3">
+                    <label class="text-light" for="new">New Password</label>
+                    <input data-rule-required="true" type="password" id="new" name="new"
+                        class="form-control bg-dark text-light">
+                </div>
+                <div class="mb-3">
+                    <label class="text-light" for="confirm">Confirm Password</label>
+                    <input data-rule-required="true" data-rule-equalto="#new" type="password" id="confirm"
+                        name='confirm' class="form-control bg-dark text-light">
+                </div>
+                <div class="mb-3">
+                    <button onclick="Userchangepass()" type="button" class="btn btn-outline-light"> Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <%- include('../footer_script')%>
+    <script>
+       var Userchangepass = () => {
+        $("#ChangeUSERPassword").validate();
+
+        if ($("#ChangeUSERPassword").valid()) {
+
+            var current = document.getElementById('current').value;
+            var newPassword = document.getElementById('new').value;
+            var confirm = document.getElementById('confirm').value;
+
+            var formData = new FormData();
+            formData.append("current", current);
+            formData.append("newPassword", newPassword);
+            formData.append("confirmPassword", confirm);
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(this.response);
+                    if (this.response == "error") {
+                        Swal.fire({
+                            icon: "error"
+                            , title: "Internal Server error Occured"
+                        });
+                    } else if (this.response == "invalid") {
+                        Swal.fire({
+                            icon: "warning"
+                            , title: "Invalid password"
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "success",
+                            title: "password updated"
+                        });
+                        document.getElementById("ChangeUSERPassword").reset();
+                    }
+                }
+            }
+
+            http.open('POST', '/user_change_pass', true);
+            http.send(formData);
+        }
+    }
+</script>
+</body>
+</html>

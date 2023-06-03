@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products</title>
+    <%- include('header_files')%>
+    <style>
+        body {
+            background-color: black;
+        }
+        .dropdown-toggle:hover{
+            background-color: transparent;
+            border-color: transparent;
+        }
+.dr{
+color: white;
+
+        } 
+        table th{
+            background-color: rgb(80, 0, 165)!important;
+        }
+        table td{
+            background-color: black!important;
+        }
+        
+        ::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff4e;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+    </style>
+</head>
+<body onload="getProductFromServer()">
+    <%- include('navbar')%>
+    <div class="container py-5 ">
+        <div class="text-center">
+            <h2 class="text-light">Manage Products</h2>
+        </div>
+        <button  style="background-color: black!important;border: 1px solid white!important;" data-bs-target='#ProductModal' data-bs-toggle='modal' type="button" class="btn text-light mb-5">
+            <i class="fa fa-plus"></i> Add new Product
+        </button>
+
+            <table class="table table-bordered  table-dark text-light table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>Sr.no</th>
+                        <th>Product name</th>
+                        <th>Photo</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id='ProductRows' ></tbody>
+            </table>
+
+        <div class="modal" id="ProductModal">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header" style="background-color: black!important;">
+                        <h2>Add Product</h2>
+                    </div>
+                    <div class="modal-body" style="background-color: black!important;">
+
+                        <form id="productForm" >
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="category">Category</label>
+                                        <select style="background-color: black!important;" onchange="getSubcategory(this.value)" name="category" id="category"
+                                            class="form-control text-light">
+                                            <option value="">Please Select Category</option>
+
+                                            <% for (var i=0;i<category.length;i++) { %>
+                                            <option value="<%=category[i].category_id%>"><%=category[i].category_name%>
+                                            </option>
+                                            <% } %>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="subcategory">Sub-Category</label>
+                                        <select style="background-color: black!important;" name="subcategory" id="subcategory" class="form-control text-light">
+                                            <option value="">Please Select Sub-Category</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="productName">Product Name</label>
+                                        <input  style="background-color: black!important;" type="text" id="productName" name="productName" class="form-control text-light">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="photo">Photo</label>
+                                        <input style="background-color: black!important;" type="file" id="photo" name="photo" class="form-control text-light">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="price">Price</label>
+                                        <input style="background-color: black!important;" type="number" id="price" name="price" class="form-control text-light">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3 ">
+                                        <label for="discount">Discount (%)</label>
+                                        <input style="background-color: black!important;" type="number" id="discount" name="discount" class="form-control text-light">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3 ">
+                                        <label for="description">Product Description</label>
+                                        <textarea style="background-color: black!important;" name="description" id="description" class="form-control text-light"></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3 ">
+
+                                            <div class="mb-3">
+                                                <button  onclick="SaveProduct()" type="button"
+                                                    class="btn btn-light text-dark text-light">SAVE</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <%- include('footer_script')%>
+
+        <script>
+            // View Products
+            var getProductFromServer = () => {
+                var http = new XMLHttpRequest();
+                http.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var serverResponse = JSON.parse(this.response);
+                        var tablepro = `    `;
+                        for (var i=0; i <serverResponse.length; i++) {
+                            tablepro += `<tr>`;
+                            tablepro += `<td>${i + 1}</td>`;
+                            tablepro += `<td>${serverResponse[i].product_name}</td>`;
+                            tablepro += `<td><img src="${serverResponse[i].photo}" height='60px' width='60px' alt=''></td>`;
+                            tablepro += `<td>${serverResponse[i].price}</td>`;
+                            tablepro += `<td>${serverResponse[i].discount}</td>`;
+                            tablepro += `<td>${serverResponse[i].description}</td>`;
+                            tablepro += `</tr>`;
+                        }
+                        document.getElementById('ProductRows').innerHTML = tablepro;
+                    }
+                }
+                http.open('get', `/view-product`, true);
+                http.send();
+            };
+
+
+
+            //Add Products 
+            var SaveProduct = () => {
+                var subcategory = document.getElementById('subcategory').value;
+                var productName = document.getElementById('productName').value;
+                var price = document.getElementById('price').value;
+                var discount = document.getElementById('discount').value;
+                var description = document.getElementById('description').value;
+                var photo = document.getElementById('photo').files[0];
+                var filename = photo.name;
+                var validphoto = filename.endsWith('png') || filename.endsWith('jpg');
+                var filesize = photo.size / 1024;
+                if (filesize > 1000) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File size should be less than 1000kb'
+                    });
+                } else if (!validphoto) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: "please select png file"
+                    })
+                } else {
+                    var formData = new FormData();
+                    formData.append('subcategory', subcategory);
+                    formData.append('productName', productName);
+                    formData.append('price', price);
+                    formData.append('discount', discount);
+                    formData.append('description', description);
+                    formData.append('photo', photo);
+                    var http = new XMLHttpRequest();
+                    http.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            // console.log(this.response);
+                            if (this.response == "error") {
+                                
+                                Swal.fire({
+                                    icon: "error",
+                                    title: 'Error Occured'
+                                });
+                            } else {
+                                $('#ProductModal').modal('hide');
+                      
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: "Product has been added"
+                                });
+                                document.getElementById("productForm").reset();
+                            }
+                        }
+                    }
+
+                    http.open("POST", `/add-product`, true);
+                    http.send(formData);
+                }
+            };
+
+
+            var getSubcategory = (categoryID) => {
+                // console.log(categoryID);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var serverRes = JSON.parse(this.response);
+                        var options = `<option value="">Please Select Sub-Category</option>`;
+                        for (var i = 0; i < serverRes.length; i++) {
+                            options += `<option value="${serverRes[i].subcategory_id}">${serverRes[i].Subcategory_name}</option>`;
+                        }
+                        document.getElementById('subcategory').innerHTML = options;
+                    }
+                }
+                xhttp.open('GET', `/fetch-subcategory-relted-to-category?category_id=${categoryID}`, true);
+                xhttp.send();
+            };
+        </script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <%- include('header_files')%>
+    <link rel="stylesheet" href="stylesheets/login_form.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box  ;
+        }
+        html{
+            font-size: 10px;
+        }
+        body {
+            background-color: black;
+
+        }
+        nav{
+            position: absolute;
+            top: 0;
+        }
+    </style>
+ <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+</head>
+<body>
+        <%- include('Guest_navbar')%>
+    <div  data-aos="fade-up"       
+    data-aos-duration="1000">
+
+        <div class="container mt-5">    
+            <div class="col-lg-8 offset-lg-2 ">
+                
+                <div class="form  col-lg-12 mx-auto ">
+                    <form id="adminlogin ">
+                        <h2>Login</h2>
+                        <hr class="mb-5">
+                        
+                        <div class="input">
+                            <div class="inputBox">
+                                <label>Username</label>
+                                <input data-rule-required="true" type="text" id="username" name="username" placeholder="Please Enter your username"  autocorrect="off" autocapitalize="off" autocomplete="off">
+                            </div>
+                            <div class="inputBox">
+                                <label>Password</label>
+                                <input data-rule-required="true"  id="password" name="password" type="password" minlength="3">
+                            </div>
+                            <div class="inputBox">
+                                <input type="button" onclick='UserLogin()'value="Login">
+                                <!-- <button type="button" onclick="AdminLogin()">Login</button> -->
+                            </div>
+                            <div class="forget" >
+                                <h4 class="mt-4 acc text-center">Dont have an Account? <a class='sign' href="user-Signup">SignUp</a></h4>
+                            </div>
+                        </div>
+            </form>
+                </div>
+          
+                <div class="container">
+                    
+                </div>
+                
+</body>
+    <%- include('footer_script')%>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script>
+  AOS.init();
+</script>
+<script>
+    var UserLogin =()=>{
+        var username=document.getElementById("username").value;
+        var password=document.getElementById("password").value;
+    
+        var formData= new FormData();
+        formData.append("username",username);
+        formData.append("password",password);
+    var http=new XMLHttpRequest();
+    http.onreadystatechange=function(){
+        if (this.readyState==4 && this.status==200){
+            console.log(this.response);
+            if (this.response=="error"){
+                Swal.fire({
+                    icon:"error",
+                    title:"Internal Server error occured"
+                });
+            }else if (this.response=="invalid"){
+                Swal.fire({
+                    icon:"warning",
+                    title:"Invalid Username or Password"
+                });
+            }else{
+                Swal.fire({
+                    icon:"success",
+                    title:"Login Successful"
+                });
+                setTimeout(()=>{
+                    window.location.href="/users";
+                },1000);
+            }
+        }
+    }
+    http.open("POST","/User-login",true);
+    http.send(formData);
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage SubCategory</title>
+    <%- include('header_files')%>
+    <style>
+        body {
+            background-color: black;
+        }
+        .dropdown-toggle:hover{
+            background-color: transparent;
+            border-color: transparent;
+        }
+        table th{
+            background-color:  rgb(80, 0, 165)!important;
+        }
+        table td{
+            background-color: black!important;
+        }
+.dr{
+color: white;
+
+        } 
+        ::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff4e;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+    </style>
+</head>
+<body onload="GetSubCategory()">
+    <%- include('navbar')%>
+    <div class="container py-5 ">
+        <div class="text-center">
+            <h2 class="text-light">Manage Sub Category</h2>
+        </div>
+        <button data-bs-target='#SubCategoryModal' data-bs-toggle='modal' type="button" style="background-color:black!important;border:1px solid white!important;"class="btn text-light  mb-5">
+            <i class="fa fa-plus"></i> Add new Sub-category
+        </button>
+        <!-- ADD MODAL -->
+        <div class="modal fade" id="SubCategoryModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header" style="background-color:black!important">
+                        <h2>Add Sub Category</h2>
+                    </div>
+                    <div class="modal-body" style="background-color:black!important">
+                        <form id="SubcategoryForm" style="background-color:black!important">
+                            <div class="mb-3">
+                                <label for="category">Select Category Name</label>
+                                <select type="text" class="form-control text-light" style="background-color:black!important" id="category">
+                                    <option value="">
+                                        Please Select Category
+                                    </option>
+                                    <% for (var i=0;i<category.length;i++) { %>
+                                    <option value="<%=category[i].category_id%>"><%=category[i].category_name%></option>
+                                    <% } %>
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category">Enter Sub Category Name</label>
+                                <input style="background-color:black!important" type="text" class="form-control bg-dark text-light" id="SubCategory">
+                            </div>
+
+                            <div class="mb-3">
+                                <button onclick="SaveSubCategory()" type="button"
+                                    class="btn btn-light text-dark">SAVE</button>
+                                <!-- <input type="button" value="SAVE" onclick="SaveCategory()" class="btn btn-primary"> -->
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- UPDATE MODAL -->
+        <div class="modal fade" id="SubCategoryEditModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header">
+                        <h2>Update Sub Category</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form id="SubcategoryEditForm">
+                            <div class="mb-3">
+                                <label for="category">Select Category Name</label>
+                                <select type="text" class="form-control bg-dark text-light" id="categoryEdit">
+                                    <option value="">
+                                        Please Select Category
+                                    </option>
+                                    <% for (var i=0;i<category.length;i++) { %>
+                                    <option value="<%=category[i].category_id%>"><%=category[i].category_name%></option>
+                                    <% } %>
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="categoryEdit">Enter Sub Category Name</label>
+                                <input type="text" class="form-control bg-dark text-light" id="SubCategoryEdit">
+                            </div>
+
+                            <div class="mb-3">
+                                <button onclick="EditSubCategory()" type="button"
+                                    class="btn btn-light text-dark">Update</button>
+                                <!-- <input type="button" value="SAVE" onclick="SaveCategory()" class="btn btn-primary"> -->
+                            </div>
+                            <input type="hidden" id="subcategoryID">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered  table-dark text-light table-hover text-center">
+            <thead>
+                <tr>
+                    <th>Sr.no</th>
+                    <th>Sub Categories</th>
+                    <th colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody id='categoryRows'>
+                <!-- <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger"><i
+                                class="fa-solid fa-trash-can"></i>
+                            Delete</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-pen"></i>
+                            edit</button>
+                    </td>
+                </tr> -->
+            </tbody>
+        </table>
+
+    </div>
+    <%- include('footer_script')%>
+
+
+    <script>
+        var SaveSubCategory = () => {
+            var category = document.getElementById('category').value;
+            var subcategory = document.getElementById('SubCategory').value;
+            console.log(category, subcategory);
+            var formData = new FormData();
+            formData.append('category', category);
+            formData.append('subcategory', subcategory);
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+                    if (this.response == 'added') {
+                        GetSubCategory();
+                        document.getElementById('SubcategoryForm').reset();
+
+                        $("#SubCategoryModal").modal('hide');
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "New Sub Category has been Added"
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error Occured'
+                        });
+                    }
+                }
+            }
+            http.open('post', '/add-subcategory', true);
+            http.send(formData);
+
+        }
+
+        var GetSubCategory = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.response == 'error') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Internal Server Error Occured'
+                        });
+                    } else {
+                        // console.log(JSON.parse(this.response));
+                        var data = JSON.parse(this.response);
+                        var tbodyhtml = ``;
+                        for (var i = 0; i < data.length; i++) {
+                            tbodyhtml += `<tr>`;
+                            tbodyhtml += `<td>${i + 1}</td>`;
+                            tbodyhtml += `<td>${data[i].Subcategory_name}</td>`;
+                            tbodyhtml += `<td>`;
+                            tbodyhtml += `<button onclick='DeleteSubCategory(${data[i].subcategory_id})' type="button" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash-can"></i> Delete</button>`;
+                            tbodyhtml += `</td>`;
+                            tbodyhtml += `<td>`;
+                            tbodyhtml += `<button onclick='ShowData(${data[i].subcategory_id},"${data[i].Subcategory_name}",${data[i].c_id})' data-bs-target='#SubCategoryEditModal' data-bs-toggle='modal' type="button" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-pen"></i> edit</button>`;
+                            tbodyhtml += `</td>`;
+                            tbodyhtml += `</tr>`;
+                        }
+                        document.getElementById('categoryRows').innerHTML = tbodyhtml;
+                    }
+                }
+            }
+            http.open('get', '/fetch-subcategory-from-server', true);
+            http.send();
+
+        };
+        var DeleteSubCategory = (id) => {
+            if(confirm('Are you Sure you want to delete?')){
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.response == 'error') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Internal Server Error Occured'
+                        });
+                    } else {
+                        GetSubCategory();
+                        Swal.fire({
+                            icon:'success',
+                            title:'Subcategory Deleted'
+                        })
+
+                    }
+                }
+            }
+            http.open('get', `/delete-subcategory?id=${id}`, true);
+            http.send();
+        }
+    };
+
+    var ShowData=(subcatID,subcatName,catID)=>{
+
+    console.log(subcatID,subcatName,catID);
+ document.getElementById("SubCategoryEdit").value = subcatName;
+ document.getElementById("categoryEdit").value = catID;
+ document.getElementById("subcategoryID").value = subcatID;
+
+}
+
+var EditSubCategory= ()=>{
+    var category = document.getElementById('categoryEdit').value;
+            var subcategory = document.getElementById('SubCategoryEdit').value;
+            var subcategoryID = document.getElementById('subcategoryID').value;
+
+            var formData = new FormData();
+            formData.append('category', category);
+            formData.append('subcategory', subcategory);
+            formData.append('subcategoryID', subcategoryID);
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    
+                    console.log(this.response);
+                    if(this.response=='error'){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Internal Server Error Occured'
+                        });
+                    }else{
+                        GetSubCategory();
+                        
+                        $("#SubCategoryEditModal").modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sub Category has been Updated'
+                        });
+                    }
+             
+                }
+            }
+            http.open('post', '/update-subcategory', true);
+            http.send(formData);
+
+}
+    
+    </script>
+</body>
+</html>

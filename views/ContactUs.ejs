@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include('header_files')%>
+    <link rel="stylesheet" href="stylesheets/user_Signup.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<script type="text/javascript">
+    (function() {
+
+        emailjs.init('Hdp2u1RfQDLYPR936');
+    })();
+</script>
+
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html{
+        font-size: 10px;
+    }
+    body{
+        font-family: Gilroy-Medium!important;
+        background-color: black;
+    }
+    ::-webkit-scrollbar {
+                width: 15px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background-color: #ffffff4e;
+                border-radius: 20px;
+                border: 6px solid transparent;
+                background-clip: content-box;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #a8bbbf;
+            }
+    .container{
+position: absolute;
+transform: translate(50%,50%)
+/* top:50% */
+        /* margin-top: 250px; */
+    
+    };
+
+    input:focus-visible{
+        color: black!important;
+        background-color: black !important;
+    }
+    
+    .inputBox::placeholder{
+        font-family: Montserat !important;
+        font-family: Inter;
+        color: aliceblue;
+    }
+</style>
+<body>
+    <%- include('Guest_navbar2')%>
+    
+    <div class="container py-4 form w-50">
+        <div class="card-header">
+            <h2 class="text-light text-center mb-5 fs-1">Contact us</h2>
+        </div>
+        <div class="card-body ">
+            <form id="ContactUsForm">
+                <div class="row">
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="Name"> Name</label>
+                        <input type="text" id="Name" name="Name" class="form-control" autocomplete="off" required>
+                    </div>
+
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="username">Email</label>
+                        <input type="email" autocomplete="off" id="email"  name="email" class="form-control"  required>
+                    </div>
+
+                    <!-- <div class="col-md-12 mb-3 inputBox">
+                        <label for="phonno"> Phone no.</label>
+                        <input type="text" id="phonno" autocomplete="nope" name="phonno" class="form-control">
+                    </div> -->
+                 
+                    <div class="col-md-12 mb-3 inputBox">
+                        <!-- <label for="confirmpass"></label> -->
+                     <textarea id="msg"style='font-family:"Inter"' placeholder="What Sneaker you want to customize" autocomplete="off" class="form-control p-3" name='msg' rows='4 required'></textarea>
+                    </div>
+                    <div class="col-md-12 mb-3 inputBox">
+                        <!-- <button  onclick="SendMail()"class="btn rounded-pill btn-outline-light text-end px-4">Send</button> -->
+                        <input type="submit" value="Send">
+                    </div>
+            </form>
+        </div>
+        <script src="https://smtpjs.com/v3/smtp.js" ></script>
+    <%- include('footer_script')%>
+<!-- <script>
+    function SendMail()={
+        var params={
+            from_name:document.getElementById("name")value,
+            email:document.getElementById('email').value,
+            message:document.getElementById('msg').value       
+        }
+        emailjs.send("service_we43oaq","template_r4ukwsf",params).
+        then(function(res){
+            alert("Success!" + res.status);
+        })
+    }
+</script> -->
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('ContactUsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var params={
+            from_name:document.getElementById('Name').value,
+            email_id:document.getElementById('email').value,
+            message:document.getElementById('msg').value    
+               
+        }
+            emailjs.send("service_aymw3m9","template_xr3fero",params);
+            
+                Swal.fire({
+                icon:"success",
+                title:"Message sent Successfully"
+            }) 
+            document.getElementById("ContactUsForm").reset();
+        });
+    }
+</script>
+</body>
+</html>

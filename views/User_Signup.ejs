@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Sign up</title>
+    <%- include('header_files')%>
+    <link rel="stylesheet" href="stylesheets/user_Signup.css">
+    <!-- <link rel="stylesheet" href="stylesheets/login_form.css"> -->
+    <style>
+        body {
+            background-color: black;
+
+        }
+        .acc{
+            color:rgba(172, 171, 171, 0.402);
+        }
+        .acc a:hover{
+            color:rgba(172, 171, 171, 0.402);
+        }
+
+     
+        ::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff4e;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+    
+    </style>
+ <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+</head>
+<body>
+    <%- include('Guest_navbar')%>
+<div data-aos="fade-up"       
+data-aos-duration="1000">
+
+
+    <div class="container  form">
+        <div class="card-header mt-5 card">
+            <h2 class="text-light text-center mb-5">Signup</h2>
+        </div>
+        <div class="card-body card-container text-center">
+            <form id="userSignup">
+                <div class="col text-center">
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="username"> Username</label>
+                        <input type="text" id="username" name="username" autocomplete="off" class="form-control"  autocorrect="off" autocapitalize="off" autocomplete="off">
+                    </div>
+
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="username">Email</label>
+                        <input type="email" id="email" name="email" required="true" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" autocomplete="off" > 
+                    </div>
+
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="name"> Name</label>
+                        <input type="text" id="name" autocomplete="off" name="name" class="form-control"  autocorrect="off" autocapitalize="off" autocomplete="off">
+                    </div>
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" autocomplete="off" name="password" class="form-control">
+                    </div>
+                    <div class="col-md-12 mb-3 inputBox">
+                        <label for="confirmpass">Confirm Password</label>
+                        <input type="password" id="confirmpass" autocomplete="off" name="confirmpass" class="form-control">
+                    </div>
+                    <div class="col-md-12 mb-3 in">
+                        <label>Gender</label><br>
+                        <input checked type="radio" id="Male" name="gender" value="Male">
+                        <label for="Male">Male</label>
+                        <input type="radio" id="Female" name="gender" value="Female">
+                        <label for="Female">Female</label>
+                           
+                    </div>
+                  
+                    <div class="col-md-12 mb-3 inputBox">
+                        <button type='button' onclick="Signup()"
+                            class="btn btn-outline-light text-center ">SignUp</button>
+                    </div>
+                </div>
+            </form>
+            <h5 class="acc">Already have an Account?<a href="/User-login"> Login</a></h5>
+        </div>
+
+    </div>
+
+</body>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script>
+  AOS.init();
+</script>
+
+    <%- include('footer_script')%>
+    <script>
+        var Signup = () => {
+            // var username=document.getElementById("username").value;
+            // var email=document.getElementById("email").value;
+            // var name=document.getElementById("name").value;
+            // var password=document.getElementById("password").value;
+            // var address=document.getElementById("address").value;
+
+            var controls = document.getElementById("userSignup").elements;
+            var formData = new FormData();
+
+            for (var item of controls) {
+                // console.log(item.type, item.id);
+                // if (item.type !="button"){
+                //  formData.append(item.id, ite)
+                // }
+                // }
+                if (item.type !="button"){
+                if (item.type == "radio") {
+                    if (item.checked) {
+                        formData.append(item.name, item.value);
+                        
+                    }
+                }
+                else {
+                    formData.append(item.id, item.value);
+                }
+            }
+        }
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange =function(){
+            if (this.readyState==4 && this.status==200){
+                console.log(this.response);
+                if (this.response=="empty")
+                {
+                    Swal.fire({
+                    icon:"warning",
+                    title:"All fields are Required"
+                });
+                }else if(this.response=="notMatched"){
+                    Swal.fire({
+                    icon:"warning",
+                    title:"Passwords are not same"
+                });
+                }else if(this.response=="error"){
+                    Swal.fire({
+                    icon:"error",
+                    title:"Internal Server Error occured"
+                }); 
+                }else if (this.response=="userExist"){
+                    Swal.fire({
+                        icon:"warning"
+                        ,title:"username already exist"
+                    });
+
+                }
+                else{
+                    Swal.fire({
+                    icon:"success",
+                    title:"User Registered"
+                }); 
+                document.getElementById("userSignup").reset();
+                }
+            }
+        }
+        http.open("POST","/User-Signup",true);
+        http.send(formData);
+
+        }
+
+
+
+
+
+
+        $(document).ready(function () {
+            $("#usersignup").validate();
+        });
+    </script>
+
+</html>

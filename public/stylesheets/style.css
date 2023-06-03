@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+html {
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    user-zoom: none;
+}
+
+body {
+    background-color: rgba(22, 24, 25, 255) !important;
+    background-color: #000 !important;
+    color: rgba(255, 255, 255, 0.865);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff4e;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+.maindiv {
+    width: 100%;
+    height: 100%;
+    scroll-snap-type: y mandatory;
+
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+
+}
+
+ul {
+    list-style: none;
+}
+
+.card {
+    height: 10px;
+
+}
+
+.rower {
+    width: 90%;
+    max-width: 1170px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 30px 20px;
+    padding: 6rem 0;
+
+    margin-left: 50px;
+}
+
+.carder {
+    position: relative;
+    height: 400px;
+    min-height: 400px;
+    overflow: hidden;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgb(65, 64, 64);
+    transform: scale(0.85);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: 0.3s ease;
+}
+
+.carder:hover {
+    background-position: right;
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(163, 159, 159, 1);
+}
+
+.carder .contentWrapper {
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+    background-color: rgba(0, 0, 0, 0.436);
+    filter: blur(50%);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    color: #fff;
+    opacity: 0;
+}
+
+.carder:hover .contentWrapper {
+    opacity: 1;
+
+}
+
+.carder:hover.contentWrapper .content {
+    width: 100%;
+}
+
+.contentWrapper .content {
+    width: 0;
+    overflow: hidden;
+    transition: 0.3s ease;
+}
+
+.contentWrapper .content h3 {
+    font-size: 24px;
+    padding: 0;
+    padding-bottom: 15px;
+    position: absolute;
+    font-family: Inter;
+    font-weight: SemiBold;
+    top: 20px;
+}
+
+.contentWrapper .content p {
+    font-size: 16px;
+    line-height: 24px;
+    color: #fff;
+    padding-bottom: 20px;
+    z-index: 5;
+    position: absolute;
+    top: 100px;
+    text-align: center;
+    left: 20px;
+    font-family: Inter;
+    font-weight: SemiBold;
+}
+
+.contentWrapper .content a {
+    display: inline-block;
+    text-transform: capitalize;
+    text-decoration: none;
+    color: #000;
+    background: #fff;
+    font-size: 16px;
+    border-radius: 50px;
+    padding: 10px 25px;
+    position: absolute;
+
+
+    font-family: Inter;
+    font-weight: SemiBold;
+    top: 220px;
+    left: 80px;
+
+}
+
+#text3 {
+    margin-top: 100px !important;
+    padding-bottom: 30px;
+    border-bottom: 1px solid white;
+}
+
+.banners {
+    color: rgba(255, 255, 255, 0.269);
+    text-align: center;
+    padding-bottom: 50px;
+    font-family: Inter;
+    font-size: 1.5em;
+    flex-wrap: wrap;
+    font-weight: SemiBold;
+
+}
+
+.my {
+    color: white;
+    display: inline;
+}
+
+#cd {
+    margin-top: 100px;
+}
+
+#cd h2 {
+    font-family: Inter;
+    font-weight: SemiBold;
+    text-align: center;
+}
+
+footer {
+    font-family: Inter;
+    font-weight: SemiBold;
+    background-color: rgba(20, 20, 20, 0.895);
+    color: #000;
+    color: #fff;
+}
+
+.foot {
+    margin-top: 300px;
+    background-color: rgba(181, 181, 181, 0.13);
+}
+
+.copy {
+    font-family: Inter;
+    font-weight: SemiBold;
+    background-color: rgba(54, 53, 53, 0.292);
+    color: #fff;
+}
+
+@media screen and (max-width:991px) {
+    .rower {
+        margin-left: 0;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width:575px) {
+    .rower {
+        grid-template-columns: 1fr;
+    }
+}

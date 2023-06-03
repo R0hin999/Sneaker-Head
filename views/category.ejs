@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category</title>
+   <%- include('header_files')%>
+<style>
+    
+    @font-face {
+    font-family: 'Gilroy-Medium';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Medium '), url('../font/Gilroy-Medium.woff') format('woff');
+    }
+    body{
+    background-color: black;   
+    font-family: Gilroy-Medium; 
+       }
+       .dropdown-toggle:hover{
+            background-color: transparent;
+            border-color: transparent;
+        }
+.dr{
+color: white;
+
+        } 
+
+        table th {
+background-color: rgb(80, 0, 165)!important
+        }
+        table td{
+            background-color: black!important;
+        }
+        ::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff4e;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+</style>
+</head>
+<body onload="GetDataFromServer()">
+    <%- include('navbar')%>
+    <div class="container py-5 ">
+        <div class="text-center">
+            <h2 class="text-light">Manage Category</h2>
+        </div>
+        <button data-bs-target='#categoryModal' style="background-color: black;border:1.2px solid white" data-bs-toggle='modal' type="button" class="btn btn-dark mb-5">
+            <i class="fa fa-plus"></i> Add new category
+        </button>
+
+        <table class="table table-bordered  table-dark text-light table-hover text-center">
+            <thead>
+                <tr>
+                    <th>Sr.no</th>
+                    <th>Category</th>
+                    <th colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody id='categoryRows'>
+        
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="modal fade" id="categoryModal">
+        <div class="modal-dialog modal-dialog-centered" >
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header" style="background-color:black!important">
+                    <h2>Add Category</h2>
+                </div>
+                <div class="modal-body" style="background-color:black!important">
+                    <form id="categoryForm">
+                        <div class="mb-3">
+                            <label for="category">Enter Category Name</label>
+                            <input style="background-color:black!important" type="text" class="form-control text-light" id="category">
+                        </div>
+
+                        <div class="mb-3">
+                            <button onclick="SaveCategory()" type="button" class="btn btn-light text-dark">SAVE</button>
+                     
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="categoryEditModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h2>Edit Category</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryEditForm">
+                        <div class="mb-3">
+                            <label for="category">Enter Category Name</label>
+                            <input type="text" class="form-control bg-dark text-light" id="categoryEdit">
+                        </div>
+                        <div class="mb-3">
+                            <input type="hidden" class="form-control bg-dark text-light" id="category_id">
+                        </div>
+
+                        <div class="mb-3">
+                            <button onclick="UpdateCategory()" type="button" class="btn btn-light text-dark">Update</button>
+                    
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <%- include('footer_script')%>
+
+    <script>
+        var GetDataFromServer = () => {
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(JSON.parse(this.response));
+                    var response = JSON.parse(this.response);
+                    if (this.response == 'error') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Internal Server Error Occured'
+                        })
+                    }
+                    else {
+                        // console.log(JSON.parse(this.response));
+                        var response = JSON.parse(this.response);
+                        var tableHTML = '';
+
+                        for (var i = 0; i < response.length; i++) {
+                            tableHTML += `<tr>`;
+                            tableHTML += `<td>${i + 1}</td>`;
+                            tableHTML += `<td>${response[i].category_name}</td>`;
+                            tableHTML += `<td>`;
+                            tableHTML += `<button onclick='DeleteCategory(${response[i].category_id})' type="button" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash-can"></i> Delete</button>`;
+                            tableHTML += `</td>`;
+                            tableHTML += `<td>`;
+                            tableHTML += `<button onclick='ShowData(${response[i].category_id},"${response[i].category_name}")' data-bs-target='#categoryEditModal' data-bs-toggle='modal' type="button" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-pen"></i> edit</button>`;
+
+                            tableHTML += `</td>`;
+
+                            tableHTML += `</tr>`;
+                        }
+                        document.getElementById('categoryRows').innerHTML = tableHTML;
+
+                    }
+                }
+            }
+        http.open('GET', '/get-category-from-server', true);
+        http.send();
+        }
+
+ var UpdateCategory= () =>{
+    var category_name = document.getElementById("categoryEdit").value;
+    var category_id= document.getElementById("category_id").value;
+
+    var formData = new FormData();
+            formData.append("category", category_name);
+            formData.append("category_id", category_id);
+ 
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+                    if (this.response=='updated'){
+                        $("#categoryEditModal").modal('hide');
+                        Swal.fire({
+                            icon:'success',
+                            title:'Category is Updated'
+                        });
+                    }
+                    GetDataFromServer(); 
+                }
+            }
+            http.open("POST", "/category-edit", true);
+            http.send(formData);
+        };
+
+
+    
+
+        var DeleteCategory = (category_id) =>
+          {
+            if (confirm("Are you Sure you want to delete?"))
+          { 
+              var formData= new FormData();
+              formData.append('category_id',category_id);
+              
+          var http=new XMLHttpRequest();
+          http.onreadystatechange=function()
+          {
+            if(this.readyState ==4 && this.status ==200)
+          {
+console.log(this.response);
+if (this.response=='error') 
+        {
+    Swal.fire({
+        icon:'error',
+        title:'Internal Server Error Occured'
+    });
+         }   
+else{
+    Swal.fire({
+        icon:'success',
+        title:'Category Deleted Successfully'
+            })
+     GetDataFromServer();
+         }
+         }
+        }
+        }  
+        http.open('POST','/del-category',true);
+        http.send(formData);
+  
+
+
+        };
+
+
+
+
+        var SaveCategory = () => {
+            var category = document.getElementById("category").value;
+
+            var formData = new FormData();
+            formData.append("category", category);
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+
+                    if (this.response == 'SUCCESS') {
+
+                        document.getElementById('categoryForm').reset();
+
+                        $("#categoryModal").modal('hide');
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "New Category has been Added"
+                        });
+
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 2000);
+
+
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error Occured'
+                        });
+                    }
+                }
+            }
+            http.open("POST", "/category-add", true);
+            http.send(formData);
+        };
+
+        var ShowData = (id,category_name)=>
+{
+    console.log(id,category_name);
+    document.getElementById("categoryEdit").value=category_name;
+    document.getElementById("category_id").value=id;
+    // document.getElementById("category_id").value=id;
+    
+}
+    </script>
+</body>
+</html>

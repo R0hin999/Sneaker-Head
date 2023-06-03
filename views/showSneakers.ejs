@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link rel="stylesheet" href="/stylesheets/ShowSneakers.css">
+     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+     <style>
+
+     </style>
+</head>
+
+<body>
+<%- include('Guest_navbar3') %>
+    <section>
+        <div data-aos="zoom-out"       
+        data-aos-duration="1000">
+
+            <div class="wrapper">
+                <div class="img-wrapper">
+                    <img id="pic" src="<%= "/"+rows[0].photo %>">
+              
+            </div>
+            <input type="hidden" value="<%= rows[0].id %>">
+            <div class="text-wrapper">
+                <h1 id="pname"><%= rows[0].product_name %></h1>
+                <div class="price-tags">
+                    <del id="dis">&#x20b9 <%= rows[0].price %></del>
+                    <h2 id="price">&#x20b9  <%= Math.round(rows[0].price - (rows[0].price * rows[0].discount) / 100) %></h2>                           
+                </div>
+            
+                  <div class="btns">
+                    <select onchange="myfun()" id="size">
+                        <option disabled selected> Size</option>
+                      <option class="fs-5" value="UK 7">UK 7</option>
+                      <option class="fs-5" value="UK 8" >UK 8</option>
+                      <option class="fs-5" value="UK 9">UK 9</option>
+                      <option class="fs-5" value="UK 10">UK 10</option>
+                      <option class="fs-5" value="UK 11">UK 11</option>
+                      <option class="fs-5" value="UK 12">UK 12</option>
+                      </select>
+<button class="btn" onclick="AddtoCart(`<%= JSON.stringify(rows[0]) %>`)">Add to cart</button>
+                  </div>
+                <div class="des">
+                    <%= rows[0].description%>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+</body>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+<script>
+
+var AddtoCart = (row) => {
+                console.log(row);
+                var formData = new FormData();
+                var a=myfun();
+                formData.append("action", "add");
+                if (a!=false){
+// console.log(a)
+                    formData.append("size",a)
+                }
+else{
+    return
+}
+formData.append("productObject", (row));
+
+                var http = new XMLHttpRequest();
+                http.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        console.log(this.response);
+
+                        if (this.response == "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Product has been added"
+                            });
+                        } 
+                        else {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Product Already in your Cart"
+                            })
+                        }
+                    }
+                }
+                http.open("POST", "/add-to-cart", true);
+                http.send(formData);
+            };
+        
+ 
+function myfun() {
+  var x = document.getElementById("size").value;
+  console.log(x);
+  if(x == undefined || x =="Size"){
+    
+  alert("Select Your Size")
+  return false;
+}
+ return x
+}
+
+</script>
+</html>

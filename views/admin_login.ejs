@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <%- include('header_files')%>
+    <link rel="stylesheet" href="stylesheets/login_form.css">
+    <style>
+           @font-face {
+    font-family: 'Gilroy-Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Bold ☞'), url('../font/Gilroy-Bold.woff') format('woff');
+    }
+    
+    @font-face {
+    font-family: 'Gilroy-Medium';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Medium '), url('../font/Gilroy-Medium.woff') format('woff');
+    }
+   
+        body {
+            font-family: GilroyBold;
+            background-color: black;
+
+        }
+    </style>
+
+</head>
+<body>
+
+
+    <div class="container mt-5">
+        <div class="col-lg-8 offset-lg-2">
+          
+            <div class="form col-lg-12 mx-auto">
+                <form id="adminlogin">
+                <h2>Admin Login</h2>
+                <hr class="mb-5">
+                <div class="input">
+                  <div class="inputBox">
+                    <label>Email</label>
+                    <input data-rule-required="true" type="email" id="email" name="email" placeholder="Please Enter you email"  autocorrect="off" autocapitalize="off" autocomplete="off">
+                  </div>
+                  <div class="inputBox">
+                    <label>Password</label>
+                    <input data-rule-required="true"  id="password" name="password" type="password" minlength="3">
+                  </div>
+                  <div class="inputBox">
+                    <input type="button" onclick='AdminLogin()'value="Login">
+                <!-- <button type="button" onclick="AdminLogin()">Login</button> -->
+                </div>
+                
+            </form>
+                </div>
+          
+    <%- include('footer_script')%>
+
+<script>
+var AdminLogin =()=>{
+    $("#adminlogin").validate();
+    if($("#adminlogin").valid()){
+    var email=document.getElementById("email").value;
+    var password=document.getElementById("password").value;
+    var formData= new FormData();
+    formData.append('email',email);
+    formData.append('password',password);
+    var http= new XMLHttpRequest();
+    http.onreadystatechange=function(){
+
+        
+        if (this.readyState==4 && this.status==200){
+            console.log(this.response);
+            if(this.response=='invalid'){
+                Swal.fire({
+                    icon:'warning',
+                    title:'Invalid Password'
+                });
+            }
+                else{
+                    Swal.fire({
+                    icon:'success',
+                    title:'Login Success'
+                });
+                setTimeout(()=>{
+                window.location.href="/admin_home" ;
+                },1000);
+            }
+            }
+        }
+        http.open('POST','/admin-login',true);
+        http.send(formData);
+    }
+    }
+
+</script>
+    
+        
+</body>
+</html>

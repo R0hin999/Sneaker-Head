@@ -1,0 +1,116 @@
+
+@font-face {
+    font-family: 'Gilroy-Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Bold ☞'), url('../font/Gilroy-Bold.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Gilroy-Heavy';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Heavy '), url('../font/Gilroy-Heavy.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Gilroy-Light';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Light '), url('../font/Gilroy-Light.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Gilroy-Medium';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Medium '), url('../font/Gilroy-Medium.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Gilroy-Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Gilroy-Regular '), url('../font/Gilroy-Regular.woff') format('woff');
+    }
+
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+color:white;
+font-family:Gilroy-Medium ;
+font-weight:500;
+}
+.card{
+    border-radius: 30px;
+}
+html{
+    font-size: 10px;
+}
+body{
+    background-color: black;
+}
+.pname{
+    font-size:4rem;
+    font-family: Gilroy-Bold;
+color: #000;
+}
+.real-price,.dis-price{
+font-size: 1.5rem;
+color: #000;
+}
+.shoe{
+    filter: drop-shadow(-8px -5px 15px rgba(18, 18, 18, 0.332));
+    transition: 0.2s linear;
+}
+.cart-btn{
+    /* position: absolute; */
+    /* top:40%;
+    left:35%; */
+    width: 30%;
+    color: #ffffff;
+    height: 15%;
+    border: none;
+    background-color:black
+ 
+}
+.cart-btn:hover{
+color: white;
+    
+    background-color:rgb(202, 27, 14)
+}
+/* .shoe:hover{
+    transform: scale(1.5);
+ 
+} */
+.drop{
+    width: 100px;
+    height: 30px;
+    color: white;
+    z-index: 99;
+border: 1px solid white;
+}
+.drop2{
+    background-color: rgb(0, 0, 0);
+    position: absolute;
+    color: rgb(255, 255, 255);
+    bottom:35px;
+    right:20px;
+    width: 20%;
+    height: 35px ;
+}
+.dropdown-menu{
+    background-color: #000 !important;
+    /* height: 100% !important; */
+    border-color: white
+}
+#size{
+height: 20px;
+    width: 15%;
+    background-color:black ;
+}

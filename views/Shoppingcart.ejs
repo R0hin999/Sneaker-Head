@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    
+    <style>
+
+body{
+    background-color: black!important;
+}
+nav{
+    background-color: black!important;
+}
+.container{
+    padding-top: 200px !important; 
+}
+th{
+background-color: rgb(124, 38, 224)!important;
+}
+
+.pname2{
+
+    font-size: 2.3rem!important;
+    font-family: Gilroy-Light;
+}
+.action{
+    vertical-align: middle;
+    display: table-cell;
+}
+span>a{
+    text-decoration: none;
+    color: white;
+    transition: all 0.2s linear;
+}
+span>a:hover{
+color: #b7b7b7;
+filter: opacity(0.7);
+}
+a>img:hover{
+    filter: opacity(0.8);
+  } 
+@media (max-width: 768px)
+{.pname2{
+font-size:1.8rem!important;
+}   .pimg{
+    width:50px!important;
+}
+
+}
+ </style>
+    <%- include('header_files')%>
+
+
+    
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+</head>
+<body onload="GetCartPro()">
+
+
+    <%- include('UserNav')%>
+
+    <div data-aos="fade-up"       
+    data-aos-duration="1000">
+
+
+    <div class="container">
+        
+        <div class="text-start" >
+            <h2 class="mb-3 py-2 text-light fs-1 sc" style="font-size: 3rem!important;">
+                Shopping Cart
+            </h2>
+            <table class="table table-bordered  table-dark text-light  text-center fs-3" id="cart">
+                
+                <tbody id="ShoppingCart" class="fs-3"></tbody>
+            </table>
+            
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<%- include('footer_script')%>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script>
+  AOS.init();
+</script>
+    <script>
+        var GetCartPro = () => {
+            var formData = new FormData();
+            formData.append("action", "getproducts");
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(this.response=="");
+                    console.log(this.response);
+                    // if (this.response.length <=0) {
+                    if (this.response == "") {
+                        document.getElementById('ShoppingCart').innerHTML = "<tr><td colspan='6' class='text-danger'><h4>EMPTY</h4></td></tr>";
+
+                    } else {
+                        console.log(JSON.parse(this.response));
+                        var cart = JSON.parse(this.response);
+                        var tbodyHTML = ``;
+                        var grandtotal = 0;
+                        cart.forEach((value, index) => {
+                            tbodyHTML += `<tr>`;
+
+                            tbodyHTML += `<td class="pname action "   >`;
+                            tbodyHTML += `<a href="/show-sneaker/${value.id}"><img src="${value.photo}" width="30%" class=""></a>`;
+                            tbodyHTML+=`</td>`
+                            tbodyHTML+=`<td class="action">`
+                            
+                            tbodyHTML += ` <span class="pname2 "><a href="/show-sneaker/${value.id}">${value.product_name} (${value.size}) </a></span>       <button type="button" onclick="RemoveProduct('${value.size}',${value.id})" class="btn btn-md btn-outline-danger">Remove</button>`;
+                            tbodyHTML += `</td>`;
+
+
+                            tbodyHTML += `<td class="action" style="width:10%">`;
+                            tbodyHTML += `<button type="button" onclick="UpdateQuantity('plus',${value.id},'${value.size}')" class="btn btn-sm btn-info "><i class="fa fa-add"></i></button>`;
+                            tbodyHTML += `<span class='mx-3' >${value.quantity}</span>`;
+                            tbodyHTML += `<button type="button" onclick="UpdateQuantity('minus',${value.id},'${value.size}')" class="btn btn-sm btn-danger "><i class="fa fa-minus"></i></button>`;
+                            grandtotal += value.quantity * value.disprice;
+                      
+         
+
+                            tbodyHTML += `</td>`;
+
+                            tbodyHTML += `<td class="action"><del style="color:red">&#x20b9;${value.price}</del>
+                                <br> &#x20b9;${value.quantity * value.disprice}
+                                </td>`;
+
+                            tbodyHTML += `</tr>`;
+
+                        });
+                        tbodyHTML += `<tr>`;
+                        tbodyHTML += `<td colspan='3'></td>`;
+                        tbodyHTML += `<td>Grand Total : &#x20b9;${grandtotal}</td>`;
+                        tbodyHTML += `</tr>`;
+
+
+                        tbodyHTML += `<tr>`;
+                        tbodyHTML += `<td colspan='3'></td>`;
+                        tbodyHTML += `<td>`;
+
+                        tbodyHTML += `<button class='btn btn-outline-light' onclick="Check('check')">Proceed To Checkout</button>`;
+                        tbodyHTML += `</td>`;
+                        tbodyHTML += `</tr>`;
+
+                        document.getElementById("ShoppingCart").innerHTML = tbodyHTML;
+                    }
+                }
+            }
+            http.open("POST", "/add-to-cart", true);
+            http.send(formData);
+        };
+        var UpdateQuantity = (action, pid,size) => {
+            // console.log(action,pid);
+            var formData = new FormData();
+            formData.append("action", action);
+            formData.append("size", size);
+            formData.append("pid", pid);
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+                    
+                    if (this.response == "updated") {
+                        GetCartPro();
+
+                    }
+                }
+            }
+            http.open("POST", '/add-to-cart', true);
+            http.send(formData);
+        }
+        var RemoveProduct = (size,pid) => {
+            if (confirm("Are you Sure")) {
+                var formData = new FormData();
+                formData.append("action", "remove");
+                formData.append("size", size);
+                formData.append("pid", pid);
+                
+                var http = new XMLHttpRequest();
+                http.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // console.log(this.response);
+
+                        if (this.response == "Removed") {
+                            $("#cart tr").remove(); 
+                            GetCartPro();
+
+
+                        }
+                    }
+                }
+                http.open("post", '/add-to-cart', true);
+                http.send(formData);
+
+            }
+        }
+        function Check(action){
+            var formData = new FormData();
+            formData.append("action", action);
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+                    
+                    if (this.response == "clear") {
+                   console.log("khali")
+                    }
+                    else{
+                        window.location.href="/checkout";
+
+                    }
+                }
+            }
+            http.open("POST", '/add-to-cart', true);
+            http.send(formData);
+        
+
+        }
+    </script>
+
+</html>

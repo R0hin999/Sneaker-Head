@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <%- include('header_files')%>
+<style>
+    body{
+        background-color: black;
+        color: white;
+    }
+
+
+</style>
+</head>
+
+<body onload="GetCartPro()">
+    <%- include('UserNav')%>
+    
+    <div class="container wrap">
+        <div class="text-center">
+            <h2 class="mb-5 py-2 text-light">
+                Shopping Cart
+            </h2>
+            <table class="table table-bordered  table-dark text-light table-hover text-center ">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product Names</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="ShoppingCart"></tbody>
+            </table>
+            <div class="mt-5 ">
+                <h2>Billing Details</h2>
+                <hr class="text-light">
+                <form id="checkoutForm ">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-light" for="city">Select City <span class="text-danger">*</span></label>
+                            <select  name="city"  onchange="getpin(this.value)"   id="city" class="bg-dark text-light form-control">
+                                <option value="">Please Select City</option >
+                                <% for (var i=0;i<city.length;i++) { %>
+                                    <option id='cityselected' value="<%=city[i].city_name%>"><%=city[i].city_name%></option>
+                                    <% } %>
+                            </select>
+                        </div>
+            
+          
+                        <div class="col-md-6 mb-3">
+                            <label class="text-light" for="pin">Enter Pincode <span class="text-danger">*</span></label>
+                            <input onchange="getval()" type="text" id="pin" class="bg-dark text-light form-control">
+                    </div> 
+                    <div class="col-md-6 mb-3">
+                        <label class="text-light" for="address">Enter Address <span class="text-danger">*</span></label>
+                        <textarea name="address" id="address" class='bg-dark text-light form-control' autocorrect="off" autocapitalize="off" autocomplete="off"></textarea>
+                    </div>
+                    <!-- <div class="col-md-6 mb-3">
+                        <label class="text-light" for="remarks">Remarks <span class="text-light">(Optional)</span></label>
+                        <textarea name="remarks" id="remarks"class='bg-dark text-light form-control'></textarea>
+                    </div> -->
+                    <div class="col-md-6 mb-3">
+                        <label for="payment">Payment Method <span class="text-danger">*</span></label><br>
+                      <input checked type="radio" name="payment" id="COD" value="COD"><lable for="COD">COD</lable>
+                      <input type="radio" name="payment" id="Online" value="Online"><lable for="Online">Online</lable>
+                    </div>
+                    </div>
+
+                        <button onclick='PlaceOrder()'class="btn btn-md btn-dark btn-outline-light">Pay now</button>
+                </div>
+    </div>
+
+
+    <%- include('footer_script')%>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+        var getpin =(cityname)=>{
+            // console.log(cityname);
+           var cityname=document.getElementById("city").value;
+           
+           var formData = new FormData();
+            formData.append("cityname", cityname);
+           var http=new XMLHttpRequest();
+           http.onreadystatechange=function(){
+            if (this.readyState==4 && this.status==200){
+    //    console.log(this.response);
+                   if (this.response=="error"){
+                        Swal.fire({
+                            icon:"error",
+                            title:'Internal Server Error'
+                        })
+                    }  else{
+       var response = JSON.parse(this.response);
+                        document.getElementById('pin').value=`${response[0].zipcode}`;
+            
+                    }
+            }
+           }
+           http.open("POST","/checkout",true);
+           http.send(formData);
+        };
+        
+        var GetCartPro = () => {
+            var formData = new FormData();
+            formData.append("action", "getproducts");
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(this.response=="");
+                    // console.log(this.response);
+                    // if (this.response.length <=0) {
+                    if (this.response == "") {
+                        document.getElementById('ShoppingCart').innerHTML = "<tr><td colspan='6' class='text-danger'><h4>EMPTY</h4></td></tr>";
+
+                    } else {
+
+                        // console.log(JSON.parse(this.response));
+                        var cart = JSON.parse(this.response);
+                        var tbodyHTML = ``;
+                        var grandtotal = 0;
+                        cart.forEach((value, index) => {
+                            tbodyHTML += `<tr>`;
+                            tbodyHTML += `<td>${index + 1}</td>`;
+                            tbodyHTML += `<td>`;
+                            tbodyHTML += `<img src="${value.photo}"alt="" width='50px'>`;
+                            tbodyHTML += `${value.product_name}`;
+                            tbodyHTML += `</td>`;
+                            tbodyHTML += `<td>&#x20b9;${value.price}</td>`;
+                            tbodyHTML += `<td>${value.discount}%</td>`;
+                            tbodyHTML += `<td>${value.size}</td>`;
+
+                            tbodyHTML += `<td>`;
+                            tbodyHTML += `<button type="button" onclick="UpdateQuantity('plus',${value.id})" class="btn btn-sm btn-info"><i class="fa fa-add"></i></button>`;
+                            tbodyHTML += `<span class='mx-3'>${value.quantity}</span>`;
+                            tbodyHTML += `<button type="button" onclick="UpdateQuantity('minus',${value.id})" class="btn btn-sm btn-danger"><i class="fa fa-minus"></i></button>`;
+                            grandtotal += value.quantity*value.disprice;
+                            tbodyHTML += `</td>`;
+                            tbodyHTML += `<td>&#x20b9;${value.quantity*value.disprice}</td>`;
+
+                            tbodyHTML += `<td>`;
+                            tbodyHTML += `<button type="button" onclick="RemoveProduct(${value.id})" class="btn btn-sm btn-outline-danger"><i class="fa fa-times"></i></button>`;
+
+
+                            tbodyHTML += `</td>`;
+                            tbodyHTML += `</tr>`;
+
+                        });
+                        tbodyHTML += `<tr>`;
+                        tbodyHTML += `<td colspan='5'></td>`;
+                        tbodyHTML += `<td>Grand Total : &#x20b9;<span id="grandtotal">${grandtotal}</span></td>`;
+                        tbodyHTML += `<td></td>`;
+                        tbodyHTML += `</tr>`;
+
+                        document.getElementById("ShoppingCart").innerHTML = tbodyHTML;
+                    }
+                }
+            }
+            http.open("POST", "/add-to-cart", true);
+            http.send(formData);
+        };
+        var UpdateQuantity = (action, pid) => {
+            // console.log(action,pid);
+            var formData = new FormData();
+            formData.append("action", action);
+            formData.append("pid", pid);
+
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // console.log(this.response);
+                    if (this.response=="updated"){
+                        GetCartPro();
+
+                    }
+                }
+            }
+            http.open("POST", '/add-to-cart', true);
+            http.send(formData);
+        }
+        var RemoveProduct = (pid) =>{
+            if (confirm("Are you Sure")){
+            var formData= new FormData();
+            formData.append("action","remove");
+            formData.append("pid",pid);
+
+            var http= new XMLHttpRequest();
+            http.onreadystatechange=function(){
+                if (this.readyState==4 && this.status==200){
+                    // console.log(this.response);
+                    if (this.response=="Removed"){
+                        GetCartPro();
+                    }
+                }
+            }
+            http.open("POST",'/add-to-cart',true);
+            http.send(formData);
+
+        }
+    }
+var getval=()=>{
+    var val=document.getElementById('pin').value;
+    return val;
+}
+
+// var getvalcity=()=>{
+
+//      return val2;
+// }
+
+
+
+    var PlaceOrder=()=>{
+            var grandtotal=document.getElementById("grandtotal").innerText;
+            // console.log(grandtotal);
+            // var city=document.getElementById("cityselected").innerText;
+            var city=document.getElementById("city").options[document.getElementById("city").selectedIndex].value;
+;
+            
+            // var pincode=document.getElementById("pin").innerHTML;
+            var pincode=getval();
+   
+            var address=document.getElementById("address").value;
+            var paymode =document.getElementById("COD").value;
+            // console.log(pincode);
+            if (address==""||city==""){
+                alert("Please fill all the Fields")
+                return false
+            }
+            console.log(paymode);
+            // console.log(city);
+            // console.log(ci);
+            if (document.getElementById("Online").checked)
+            {
+                paymode = document.getElementById("Online").value;
+
+            }
+    
+            var formData = new FormData();
+            
+            formData.append("grandtotal",grandtotal);
+            formData.append("city",city);
+            formData.append("pincode",pincode);
+            formData.append("address",address);
+            formData.append("paymode",paymode);
+
+    
+            var http=new XMLHttpRequest();
+            http.onreadystatechange=function(){
+                if (this.readyState==4 && this.status==200){
+                    console.log(this.response);
+                    if (this.response=="success"){
+                        // console.log("THANK YOU")
+                        window.location.href='/users/thank-you';
+                    }else if(this.response=="online"){
+                        window.location.href='/users/razor-pay';   
+                    }
+                    
+                    else{
+                        swal.fire({
+                            icon:"warning"
+                            ,title:"Server Error"
+                        })
+                    }
+                }
+            }
+            http.open("POST",'/users/place-order',true);
+            http.send(formData);
+        }
+    </script>
+</body>
+</html>

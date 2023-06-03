@@ -1,0 +1,75 @@
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<input type="hidden" id="Total" value="<%= totalAmt %>">
+<script>
+
+
+
+    $(document).ready(function () {
+        var grandtotal = document.getElementById("Total").value;
+
+        var options = {
+            "key": "rzp_test_FaVc0Y4SdkfXSb",
+            "amount": grandtotal * 100,
+            "name": "Sneaker Head",
+            "description": "Online payment System",
+            "image": "https://s3.amazonaws.com/rzp-mobile/images/rzp.jpg",
+            "handler": function (response) {
+                // alert(response.razorpay_payment_id);
+                if (typeof response.razorpay_payment_id == 'undefined' ||  response.razorpay_payment_id < 1) {
+  redirect_url = '/checkout';
+} else {
+  redirect_url = '/users/thank-you';
+}
+location.href = redirect_url;
+                let http = new XMLHttpRequest();
+                http.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        if (this.response === "error") {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Internal Server Error"
+                            });
+                            setTimeout(() => {
+                                window.location.href = "/shopping-cart";
+                            }, 1000);
+                        } else if (this.response === "failed") {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "payment Failed"
+                            });
+                            setTimeout(() => {
+                                window.location.href = "/checkout ";
+                            }, 1000);
+                        } else {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Payment Completed Successfully"
+                            })
+                            setTimeout(() => {
+                                window.location.href = "/users/thank-you ";
+                            }, 1000);
+                        }
+                    }
+                }
+                http.open("GET", `/users/payment_action?payment_id=${response.razorpay_payment_id}`, true0);
+                http.send();
+            },
+            "prefill": {
+                "name": "",
+                "email": ""
+            },
+            "notes": {
+                "address": ""
+            },
+            "theme": {
+                "color": "#942436FF"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    });
+</script>

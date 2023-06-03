@@ -1,0 +1,32 @@
+.drops a:hover{
+background: #000;
+color:aliceblue;
+}
+.drops a:hover,
+.drops a.active,
+.drops a.active {
+  opacity: 1;
+}
+.drops a.inactive {
+    opacity: 0.3;
+   }
+
+.drops {
+    visibility: hidden;
+  }
+  
+  .drops> * {
+    visibility: visible;
+  }
+  
+  .drops> * {
+    transition: opacity 0.3s ease-in;
+  }
+  
+  .drops:hover> * {
+    opacity: 0.3;
+  }
+  
+  .drops> *:hover {
+    opacity: 1;
+  }
